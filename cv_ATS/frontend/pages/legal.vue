@@ -58,6 +58,55 @@
           Aucun cookie publicitaire ou de traçage n'est utilisé.
         </p>
       </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold text-blue-600">Technologies utilisées</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
+          <div class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm">
+            <img 
+              src="/FastAPI.svg" 
+              alt="FastAPI" 
+              class="h-12 dark:invert"
+            />
+            <h3 class="text-lg font-semibold mb-2">FastAPI</h3>
+            <p class="text-sm text-center text-gray-600">
+              Framework Python pour APIs performantes
+            </p>
+          </div>
+
+          <div class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm">
+            <img 
+              src="/Nuxt JS.svg" 
+              alt="Nuxt.js" 
+              class="h-12 dark:invert"
+            />
+            <h3 class="text-lg font-semibold mb-2">Nuxt.js</h3>
+            <p class="text-sm text-center text-gray-600">
+              Framework Vue.js pour applications web modernes
+            </p>
+            <a 
+              href="https://nuxt.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:text-blue-800 text-sm mt-2"
+            >
+              En savoir plus
+            </a>
+          </div>
+
+          <div class="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm">
+            <img 
+              src="/Tailwind CSS.svg" 
+              alt="Tailwind CSS" 
+              class="h-12"
+            />
+            <h3 class="text-lg font-semibold mb-2">Tailwind CSS</h3>
+            <p class="text-sm text-center text-gray-600">
+              Framework CSS utilitaire moderne
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </template> 
