@@ -892,72 +892,44 @@ const handleFileDrop = (event) => {
 const analyzeCV = async () => {
   if (!canAnalyze.value) return
   
-  console.log('Début de l\'analyse...')
   isAnalyzing.value = true
   currentStep.value = 1
   
   try {
     const formData = new FormData()
     
-    if (importMode.value === 'file') {
-      formData.append('file', selectedFile.value)
-      console.log('Fichier ajouté:', selectedFile.value.name)
-    } else {
+    if (importMode.value === 'text') {
       formData.append('cv_content', cvContent.value)
-      console.log('Contenu CV ajouté, longueur:', cvContent.value.length)
+    } else {
+      formData.append('file', selectedFile.value)
     }
     
     if (jobOffer.value.trim()) {
       formData.append('job_offer', jobOffer.value)
-      console.log('Offre d\'emploi ajoutée')
     }
 
-    const response = await fetch('http://localhost:8000/analyze-cv', {
+    const response = await fetch('/api/analyze-cv', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Origin': window.location.origin
       },
       body: formData,
-      credentials: 'include'
+      credentials: 'same-origin'  // Important pour les cookies de session
     })
 
     if (!response.ok) {
       const error = await response.json()
-      if (response.status === 429) {
-        // Extraction du temps d'attente du message d'erreur
-        const waitTimeMatch = error.detail.match(/try again in (\d+)m(\d+\.\d+)s/)
-        if (waitTimeMatch) {
-          const minutes = parseInt(waitTimeMatch[1])
-          const seconds = Math.round(parseFloat(waitTimeMatch[2]))
-          showToast(
-            'error',
-            `Service temporairement indisponible. Veuillez réessayer dans ${minutes} minutes et ${seconds} secondes.`
-          )
-        } else {
-          showToast(
-            'error',
-            'Service temporairement indisponible. Veuillez réessayer dans quelques minutes.'
-          )
-        }
-        return
-      }
-      throw new Error(error.detail || 'Erreur lors de l\'analyse')
+      throw new Error(error.detail || `HTTP error! status: ${response.status}`)
     }
 
-    const data = await response.json()
-    console.log('Réponse du backend:', data)
-    analysisResults.value = data
+    analysisResults.value = await response.json()
     currentStep.value = 2
-    showToast('success', 'Analyse terminée avec succès !')
-
+    showToast('success', 'Analyse terminée !')
   } catch (error) {
-    console.error('Erreur détaillée:', error)
-    showToast('error', error.message || 'Une erreur est survenue lors de l\'analyse. Veuillez réessayer.')
+    console.error('Erreur:', error)
+    showToast('error', 'Erreur lors de l\'analyse: ' + error.message)
   } finally {
     isAnalyzing.value = false
-    currentStep.value = 0
-    console.log('Fin de l\'analyse')
   }
 }
 
