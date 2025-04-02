@@ -1,0 +1,6 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PYTHONPATH=/app
+
+# Mise à jour des séances tous les jours à 1h du matin
+0 1 * * * cd /app && python scripts/update_seances.py >> /var/log/cron.log 2>&1 && echo "Cron job executed at $(date)" >> /var/log/cron.log

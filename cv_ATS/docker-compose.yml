@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cv_ats_backend
+    restart: unless-stopped
+    volumes:
+      - ./backend:/app
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    networks:
+      - rtm_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cv-ats-api.rule=Host(`api.optimise-ton-cv.fr`)"
+      - "traefik.http.routers.cv-ats-api.entrypoints=websecure"
+      - "traefik.http.routers.cv-ats-api.tls=true"
+      - "traefik.http.routers.cv-ats-api.tls.certresolver=myresolver"
+      - "traefik.http.services.cv-ats-api.loadbalancer.server.port=8000"
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cv_ats_frontend
+    restart: unless-stopped
+    environment:
+      - NUXT_PUBLIC_API_BASE_URL=http://backend:8000
+      - PORT=3002
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cv-ats.rule=Host(`optimise-ton-cv.fr`, `www.optimise-ton-cv.fr`)"
+      - "traefik.http.routers.cv-ats.entrypoints=websecure"
+      - "traefik.http.routers.cv-ats.tls=true"
+      - "traefik.http.routers.cv-ats.tls.certresolver=myresolver"
+      - "traefik.http.services.cv-ats.loadbalancer.server.port=3002"
+      - "traefik.http.services.cv-ats.loadbalancer.passHostHeader=true"
+      # Redirection HTTP vers HTTPS
+      - "traefik.http.routers.cv-ats-http.rule=Host(`optimise-ton-cv.fr`, `www.optimise-ton-cv.fr`)"
+      - "traefik.http.routers.cv-ats-http.entrypoints=web"
+      - "traefik.http.middlewares.redirect-to-https-cv.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https-cv.redirectscheme.permanent=true"
+      - "traefik.http.routers.cv-ats-http.middlewares=redirect-to-https-cv"
+      # Redirection www vers non-www
+      - "traefik.http.middlewares.www-redirect-cv.redirectregex.regex=^https://www\\.(.+)"
+      - "traefik.http.middlewares.www-redirect-cv.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.www-redirect-cv.redirectregex.permanent=true"
+      - "traefik.http.routers.cv-ats.middlewares=www-redirect-cv"
+      # En-têtes de sécurité
+      - "traefik.http.middlewares.security-headers-cv.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubDomains; preload"
+      - "traefik.http.middlewares.security-headers-cv.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+      - "traefik.http.middlewares.security-headers-cv.headers.customResponseHeaders.X-Frame-Options=DENY"
+      - "traefik.http.middlewares.security-headers-cv.headers.customResponseHeaders.X-XSS-Protection=1; mode=block"
+      - "traefik.http.routers.cv-ats.middlewares=security-headers-cv,www-redirect-cv"
+    networks:
+      - rtm_network
+
+networks:
+  rtm_network:
+    external: true
+    name: traefik_proxy 

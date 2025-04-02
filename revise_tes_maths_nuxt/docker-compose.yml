@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=ouaddour.massyl@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--log.level=DEBUG"
+      - "--api.dashboard=true"
+      - "--log.format=json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_logs:/var/log/traefik
+      - letsencrypt:/letsencrypt
+    labels:
+      - "traefik.http.routers.backend-static.rule=Host(`revise-tes-maths.fr`, `www.revise-tes-maths.fr`) && PathPrefix(`/static`)"
+      - "traefik.http.routers.backend-static.entrypoints=websecure"
+      - "traefik.http.routers.backend-static.tls=true"
+      - "traefik.http.routers.backend-static.service=backend"
+    networks:
+      - default
+
+  db:
+    image: postgres:15.6
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-rtm}
+      POSTGRES_USER: ${POSTGRES_USER:-rtm_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rtm_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-rtm_user}:${POSTGRES_PASSWORD:-rtm_password}@db:5432/${POSTGRES_DB:-rtm}
+      FLASK_APP: run.py
+      FLASK_ENV: ${FLASK_ENV:-production}
+      SECRET_KEY: ${SECRET_KEY:-your_secret_key_here}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    volumes:
+      - uploads:/app/static/uploads
+    ports:
+      - "5000:5000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`revise-tes-maths.fr`, `www.revise-tes-maths.fr`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.services.backend.loadbalancer.server.port=5000"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+      - "traefik.http.routers.backend-http.rule=Host(`revise-tes-maths.fr`, `www.revise-tes-maths.fr`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-http.entrypoints=web"
+      - "traefik.http.routers.backend-http.middlewares=redirect-to-https"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    environment:
+      PORT: 3000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.(.+)"
+      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.www-redirect.redirectregex.permanent=true"
+      - "traefik.http.routers.frontend.rule=Host(`revise-tes-maths.fr`, `www.revise-tes-maths.fr`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.routers.frontend.middlewares=www-redirect"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.services.frontend.loadbalancer.passHostHeader=true"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+      - "traefik.http.routers.frontend-http.rule=Host(`revise-tes-maths.fr`, `www.revise-tes-maths.fr`)"
+      - "traefik.http.routers.frontend-http.entrypoints=web"
+      - "traefik.http.routers.frontend-http.middlewares=redirect-to-https,www-redirect"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 0"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  traefik_logs:
+  letsencrypt:
+  uploads:
+
+networks:
+  default:
+    name: traefik_proxy 
