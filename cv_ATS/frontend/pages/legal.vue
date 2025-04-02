@@ -12,64 +12,52 @@
 
     <h1 class="text-4xl font-bold mb-12 text-center text-gray-800">Mentions Légales</h1>
     
-    <div class="prose prose-blue max-w-none">
-      <div class="mb-12">
-        <h2 class="text-2xl text-blue-600 mb-6">1. Éditeur du site</h2>
-        <p class="bg-gray-50 p-4 rounded-lg text-gray-700">
-          Optimise-ton-CV<br>
-          Développé par : Massyl OUADDOUR<br>
-          Email : ouaddour.massyl@gmail.com<br>
-          Adresse : Paris, France
+    <div class="prose prose-blue max-w-none space-y-8">
+      <section>
+        <h2 class="text-2xl font-semibold text-blue-600">Éditeur du site</h2>
+        <p>
+          Le site optimise-ton-cv.fr est édité par :<br>
+          Massyl OUADDOUR<br>
+          Email : ouaddour.massyl@gmail.com
         </p>
-      </div>
+      </section>
 
-      <div class="mb-12">
-        <h2 class="text-2xl text-blue-600 mb-6">2. Hébergement</h2>
-        <p class="bg-gray-50 p-4 rounded-lg text-gray-700">
+      <section>
+        <h2 class="text-2xl font-semibold text-blue-600">Hébergement</h2>
+        <p>
           Le site est hébergé par :<br>
-          [Nom de l'hébergeur]<br>
-          [Adresse de l'hébergeur]
+          HOSTINGER INTERNATIONAL LTD<br>
+          61 Lordou Vironos Street<br>
+          6023 Larnaca, Chypre<br>
+          Site web : <a href="https://www.hostinger.fr" class="text-blue-600 hover:text-blue-800">www.hostinger.fr</a>
         </p>
-      </div>
+      </section>
 
-      <h2>3. Propriété intellectuelle</h2>
-      <p>
-        L'ensemble des éléments constituant ce site (textes, images, code source, etc.) 
-        est protégé par les lois relatives à la propriété intellectuelle.
-      </p>
+      <section>
+        <h2 class="text-2xl font-semibold text-blue-600">Propriété intellectuelle</h2>
+        <p>
+          L'ensemble du contenu de ce site (textes, images, logos, etc.) est protégé par le droit d'auteur.
+          Toute reproduction ou représentation, totale ou partielle, est interdite sans autorisation préalable.
+        </p>
+      </section>
 
-      <h2>4. Technologies utilisées</h2>
-      <p>
-        Ce site utilise les technologies suivantes :
-      </p>
-      <ul>
-        <li>
-          <strong>Groq</strong> : Service d'API pour l'intelligence artificielle.<br>
-          Plus d'informations sur : <a href="https://groq.com" class="text-blue-600 hover:underline">https://groq.com</a>
-        </li>
-        <li>
-          <strong>LLaMA</strong> : Modèle de langage développé par Meta AI.<br>
-          Version utilisée : LLaMA 3.3 70B Versatile
-        </li>
-      </ul>
+      <section>
+        <h2 class="text-2xl font-semibold text-blue-600">Protection des données</h2>
+        <p>
+          Les données personnelles collectées sur ce site sont uniquement utilisées pour l'analyse des CV.
+          Aucune donnée n'est stockée de manière permanente ni partagée avec des tiers.
+          Conformément à la loi "Informatique et Libertés" du 6 janvier 1978, vous disposez d'un droit d'accès,
+          de rectification et de suppression des données vous concernant.
+        </p>
+      </section>
 
-      <h2>5. Cookies</h2>
-      <p>
-        Ce site utilise des cookies techniques nécessaires à son fonctionnement. 
-        Aucun cookie publicitaire n'est utilisé.
-      </p>
-
-      <h2>6. Responsabilité</h2>
-      <p>
-        Malgré les soins apportés, nous ne pouvons garantir l'exactitude, la précision 
-        ou l'exhaustivité des informations mises à disposition sur ce site.
-      </p>
-
-      <h2>7. Droit applicable</h2>
-      <p>
-        Les présentes mentions légales sont soumises au droit français. En cas de litige, 
-        les tribunaux français seront seuls compétents.
-      </p>
+      <section>
+        <h2 class="text-2xl font-semibold text-blue-600">Cookies</h2>
+        <p>
+          Ce site utilise des cookies techniques essentiels au fonctionnement du service.
+          Aucun cookie publicitaire ou de traçage n'est utilisé.
+        </p>
+      </section>
     </div>
   </div>
 </template> 
