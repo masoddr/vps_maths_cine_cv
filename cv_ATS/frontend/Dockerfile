@@ -11,6 +11,9 @@ RUN npm install
 # Copie du reste des fichiers
 COPY . .
 
+# Copie de la favicon
+COPY public ./public
+
 # Build de l'application
 RUN npm run build
 

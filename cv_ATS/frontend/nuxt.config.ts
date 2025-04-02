@@ -12,5 +12,12 @@ export default defineNuxtConfig({
     config: {
       darkMode: 'class'
     }
+  },
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      ]
+    }
   }
 })
