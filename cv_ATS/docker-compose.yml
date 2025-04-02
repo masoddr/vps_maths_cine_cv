@@ -15,11 +15,22 @@ services:
       - rtm_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.cv-ats-api.rule=Host(`api.optimise-ton-cv.fr`)"
+      - "traefik.http.routers.cv-ats-api.rule=Host(`optimise-ton-cv.fr`, `www.optimise-ton-cv.fr`) && PathPrefix(`/api`)"
       - "traefik.http.routers.cv-ats-api.entrypoints=websecure"
       - "traefik.http.routers.cv-ats-api.tls=true"
       - "traefik.http.routers.cv-ats-api.tls.certresolver=myresolver"
       - "traefik.http.services.cv-ats-api.loadbalancer.server.port=8000"
+      # Ajout de la redirection HTTP vers HTTPS pour l'API
+      - "traefik.http.middlewares.redirect-to-https-api.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https-api.redirectscheme.permanent=true"
+      - "traefik.http.routers.cv-ats-api-http.rule=Host(`optimise-ton-cv.fr`, `www.optimise-ton-cv.fr`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.cv-ats-api-http.entrypoints=web"
+      - "traefik.http.routers.cv-ats-api-http.middlewares=redirect-to-https-api"
+      - "traefik.http.middlewares.security-headers-cv-api.headers.customResponseHeaders.Strict-Transport-Security=max-age=31536000; includeSubDomains; preload"
+      - "traefik.http.middlewares.security-headers-cv-api.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+      - "traefik.http.middlewares.security-headers-cv-api.headers.customResponseHeaders.X-Frame-Options=DENY"
+      - "traefik.http.middlewares.security-headers-cv-api.headers.customResponseHeaders.X-XSS-Protection=1; mode=block"
+      - "traefik.http.routers.cv-ats-api.middlewares=security-headers-cv-api"
 
   frontend:
     build: 
@@ -28,10 +39,10 @@ services:
     container_name: cv_ats_frontend
     restart: unless-stopped
     environment:
-      - NUXT_PUBLIC_API_BASE_URL=http://backend:8000
+      - NUXT_PUBLIC_API_BASE_URL=/api
       - PORT=3002
+      - GROQ_API_KEY=${GROQ_API_KEY}
     volumes:
-      - ./frontend:/app
       - /app/node_modules
     depends_on:
       - backend

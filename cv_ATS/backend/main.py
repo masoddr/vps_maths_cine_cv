@@ -29,14 +29,17 @@ client = OpenAI(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+# Créer l'application avec le préfixe /api
+app = FastAPI(root_path="/api")
 
 # Configuration CORS plus détaillée avec logs
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:3001",  # Ajout de votre port 3001
-    "http://127.0.0.1:3001"
+    "http://localhost:3002",
+    "http://127.0.0.1:3002",
+    "https://optimise-ton-cv.fr",
+    "https://www.optimise-ton-cv.fr"
 ]
 
 app.add_middleware(
