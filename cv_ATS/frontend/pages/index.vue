@@ -942,8 +942,16 @@ const analyzeCV = async () => {
         'Accept': 'application/json',
       },
       body: formData,
-      credentials: 'same-origin'  // Important pour les cookies de session
+      credentials: 'same-origin'
     })
+
+    if (response.status === 429) {
+      showToast(
+        'error',
+        'Limite d\'appels API atteinte. Veuillez réessayer dans quelques minutes ou contacter le support.'
+      )
+      return
+    }
 
     if (!response.ok) {
       const error = await response.json()
