@@ -69,7 +69,7 @@ class CVAnalysisResponse(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-@app.post("/analyze-cv", response_model=CVAnalysisResponse)
+@app.post("/api/analyze-cv", response_model=CVAnalysisResponse)
 async def analyze_cv(
     request: Request,
     file: Optional[UploadFile] = File(None),

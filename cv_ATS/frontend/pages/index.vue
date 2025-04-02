@@ -889,6 +889,19 @@ const handleFileDrop = (event) => {
   }
 }
 
+const showToast = (type, message) => {
+  toast.value = {
+    isVisible: true,
+    type,
+    message
+  }
+  
+  // Cacher le toast après 3 secondes
+  setTimeout(() => {
+    toast.value.isVisible = false
+  }, 3000)
+}
+
 const analyzeCV = async () => {
   if (!canAnalyze.value) return
   
