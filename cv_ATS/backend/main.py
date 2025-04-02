@@ -236,73 +236,32 @@ IMPORTANT :
         json_match = re.search(r'```json\s*(.*?)\s*```', response_content, re.DOTALL)
         if json_match:
             response_content = json_match.group(1)
-        else:
-            # Si pas de balises json, on essaie de trouver directement un objet JSON
-            json_match = re.search(r'\{.*\}', response_content, re.DOTALL)
-            if json_match:
-                response_content = json_match.group(0)
         
-        response_content = response_content.strip()
+        # Nettoyage et correction des expressions mathématiques
+        response_content = re.sub(r'(\d+\.?\d*)\s*/\s*(\d+\.?\d*)\s*\*\s*(\d+\.?\d*)', 
+                                lambda m: str(float(m.group(1)) / float(m.group(2)) * float(m.group(3))), 
+                                response_content)
         
         try:
             analysis_result = json.loads(response_content)
             
-            # Vérification et limitation du score total
+            # Conversion des scores en nombres
             if "totalScore" in analysis_result:
-                analysis_result["totalScore"] = min(20.0, float(analysis_result["totalScore"]))
+                analysis_result["totalScore"] = float(analysis_result["totalScore"])
             
-            # Vérification des scores individuels
-            if "scores" in analysis_result:
-                for key in analysis_result["scores"]:
-                    analysis_result["scores"][key] = min(5.0, float(analysis_result["scores"][key]))
-
-            # Conversion des scores de compatibilité de décimal à pourcentage
-            if job_offer and analysis_result.get("jobMatch"):
-                if isinstance(analysis_result["jobMatch"], dict):
-                    for key in ["score", "technicalMatch", "experienceMatch", "softSkillsMatch"]:
-                        if key in analysis_result["jobMatch"]:
-                            # Multiplication par 100 pour convertir en pourcentage
-                            value = float(analysis_result["jobMatch"][key]) * 100
-                            analysis_result["jobMatch"][key] = min(100.0, value)
-                elif isinstance(analysis_result["jobMatch"], (int, float)):
-                    # Si jobMatch est un nombre, le convertir en pourcentage
-                    score = float(analysis_result["jobMatch"]) * 100
-                    analysis_result["jobMatch"] = {
-                        "score": min(100.0, score),
-                        "technicalMatch": min(100.0, score),
-                        "experienceMatch": min(100.0, score),
-                        "softSkillsMatch": min(100.0, score),
-                        "strengths": [],
-                        "gaps": [],
-                        "recommendations": []
-                    }
-
-            # Autres vérifications...
-            if not isinstance(analysis_result["optimizedVersion"], str):
-                raise HTTPException(
-                    status_code=500,
-                    detail="optimizedVersion must be a string"
-                )
+            if "jobMatch" in analysis_result:
+                if isinstance(analysis_result["jobMatch"], (int, str)):
+                    analysis_result["jobMatch"] = float(analysis_result["jobMatch"])
 
             logger.info("Analyse du CV réussie")
             return CVAnalysisResponse(**analysis_result)
         except json.JSONDecodeError as e:
-            print(f"Contenu de la réponse : {response_content}")
+            logger.error(f"Erreur de parsing JSON : {e}")
+            logger.error(f"Contenu problématique : {response_content}")
             raise HTTPException(
                 status_code=500,
-                detail=f"Error parsing JSON response: {str(e)}"
+                detail="Erreur lors du parsing de la réponse"
             )
-
-    except HTTPStatusError as e:
-        if e.response.status_code == 429:
-            raise HTTPException(
-                status_code=429,
-                detail="Limite de requêtes atteinte. Veuillez réessayer dans quelques minutes."
-            )
-        raise HTTPException(
-            status_code=500,
-            detail="Une erreur est survenue lors de l'analyse"
-        )
     except Exception as e:
         logger.error(f"Erreur lors de l'analyse: {str(e)}")
         raise HTTPException(
