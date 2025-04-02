@@ -64,12 +64,12 @@ class CVAnalysisResponse(BaseModel):
     optimizedVersion: str
     scores: Dict[str, float]
     totalScore: float
-    jobMatch: Optional[Dict[str, Union[float, List[str]]]] = None
+    jobMatch: Optional[Union[Dict[str, Union[float, List[str]]], int]] = None
 
     class Config:
         arbitrary_types_allowed = True
 
-@app.post("/api/analyze-cv", response_model=CVAnalysisResponse)
+@app.post("/analyze-cv", response_model=CVAnalysisResponse)
 async def analyze_cv(
     request: Request,
     file: Optional[UploadFile] = File(None),
