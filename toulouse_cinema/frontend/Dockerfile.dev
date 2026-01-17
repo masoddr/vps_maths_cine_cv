@@ -1,0 +1,22 @@
+# Development Dockerfile for Nuxt.js with hot-reload
+FROM node:20.18.0-slim
+
+# Set working directory
+WORKDIR /app
+
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV HUSKY=0
+ENV PORT=3000
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm install
+
+# Expose the development server port
+EXPOSE 3000
+
+# The command will be overridden by docker-compose
+CMD ["npm", "run", "dev"]

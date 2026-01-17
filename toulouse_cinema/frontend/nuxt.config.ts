@@ -9,12 +9,13 @@ export default defineNuxtConfig({
       routes: ['/']
     },
     server: {
-      port: process.env.PORT
+      port: process.env.PORT,
+      host: process.env.HOST || '0.0.0.0'
     },
     routeRules: {
-      '/': { prerender: true },
-      '/films': { prerender: true },
-      '/cinemas': { prerender: true }
+      '/': { prerender: process.env.NODE_ENV === 'production' },
+      '/films': { prerender: process.env.NODE_ENV === 'production' },
+      '/cinemas': { prerender: process.env.NODE_ENV === 'production' }
     }
   },
 
