@@ -1,5 +1,5 @@
 # Image de base pour la construction
-FROM node:20.11.1-slim as builder
+FROM node:20.18.0-slim as builder
 
 # Définition des variables d'environnement pour npm
 ENV NODE_ENV=production
@@ -22,7 +22,7 @@ COPY . .
 RUN npm run build
 
 # Image finale
-FROM node:20.11.1-alpine
+FROM node:20.18.0-alpine
 
 WORKDIR /app
 
