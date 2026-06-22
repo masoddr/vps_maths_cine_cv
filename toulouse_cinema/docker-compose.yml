@@ -21,13 +21,13 @@ services:
       - backend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend-tc.rule=Host(`cinephoria.fr`, `www.cinephoria.fr`)"
+      - "traefik.http.routers.frontend-tc.rule=Host(`cinephoria.fr`) || Host(`www.cinephoria.fr`)"
       - "traefik.http.routers.frontend-tc.entrypoints=websecure"
       - "traefik.http.routers.frontend-tc.tls=true"
       - "traefik.http.routers.frontend-tc.tls.certresolver=myresolver"
       - "traefik.http.services.frontend-tc.loadbalancer.server.port=3001"
       - "traefik.http.services.frontend-tc.loadbalancer.passHostHeader=true"
-      - "traefik.http.routers.frontend-tc-http.rule=Host(`cinephoria.fr`, `www.cinephoria.fr`)"
+      - "traefik.http.routers.frontend-tc-http.rule=Host(`cinephoria.fr`) || Host(`www.cinephoria.fr`)"
       - "traefik.http.routers.frontend-tc-http.entrypoints=web"
       - "traefik.http.middlewares.redirect-to-https-tc.redirectscheme.scheme=https"
       - "traefik.http.middlewares.redirect-to-https-tc.redirectscheme.permanent=true"

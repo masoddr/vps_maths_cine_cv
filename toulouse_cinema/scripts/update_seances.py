@@ -47,7 +47,7 @@ def main():
     
     # Définir les chemins
     cache_path = Path(__file__).parent.parent / 'data' / 'seances_cache.json'
-    frontend_path = Path(__file__).parent.parent.parent / 'frontend' / 'public' / 'seances.json'
+    frontend_path = Path(__file__).parent.parent / 'frontend' / 'public' / 'seances.json'
     
     # Créer les répertoires de destination s'ils n'existent pas
     os.makedirs(os.path.dirname(cache_path), exist_ok=True)

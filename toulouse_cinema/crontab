@@ -2,8 +2,5 @@ SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 PYTHONPATH=/app
 
-# Mise à jour des séances tous les jours à 1h du matin
+# Daily seances update at 1:00 AM (container paths).
 0 1 * * * cd /app && python scripts/update_seances.py >> /var/log/cron.log 2>&1 && echo "Cron job executed at $(date)" >> /var/log/cron.log
-
-# Redémarrage des conteneurs Docker 25 minutes après le scraping (1h25)
-25 1 * * * cd /home/massyl/vps_maths_cine_cv/toulouse_cinema && docker-compose down && sleep 2 && docker-compose up --build -d >> /var/log/cron.log 2>&1 && echo "Docker containers restarted at $(date)" >> /var/log/cron.log

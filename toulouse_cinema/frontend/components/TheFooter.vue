@@ -17,7 +17,7 @@
           <h3 class="text-lg font-semibold mb-4">Contact</h3>
           <ul class="space-y-2">
             <li><NuxtLink to="/contact" class="hover:text-primary">Me contacter</NuxtLink></li>
-            <li><a href="mailto:hannahben@hotmail.fr" class="hover:text-primary">hannahben@hotmail.fr</a></li>
+            <li><a href="mailto:ouaddour.massyl@gmail.com" class="hover:text-primary">ouaddour.massyl@gmail.com</a></li>
           </ul>
         </div>
 
@@ -43,7 +43,7 @@
             rel="noopener noreferrer" 
             class="text-primary hover:underline"
           >
-            Hannah Bensussan
+            Massyl Ouaddour
           </a>
         </p>
       </div>
